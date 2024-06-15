@@ -56,11 +56,21 @@ public class View extends JFrame{
         JButton btnadd=new JButton("Enter");
         //panelInputs.add(blank);
        // panelInputs.add(btnadd);
+        JPanel panFps =new JPanel();
+        //panFps.setLayout(new BorderLayout());
+        JLabel lblFps = new JLabel("FPS:");
+        JLabel fps = new JLabel("0");
+        panFps.add(lblFps);
+        panFps.add(fps);
 
         JPanel wrapperPanel = new JPanel();
         wrapperPanel.setLayout(new FlowLayout());
         wrapperPanel.add(panelInputs);
         wrapperPanel.add(btnadd);
+        //wrapperPanel.add(panFps);
+        
+
+
 
         JPanel particlesArea = new JPanel();
         particlesArea.setLayout(new BorderLayout());
@@ -69,6 +79,9 @@ public class View extends JFrame{
        
         add(wrapperPanel,BorderLayout.NORTH);
         add(particlesArea,BorderLayout.CENTER);
+        add(panFps,BorderLayout.SOUTH);
+
+        
     }
   
 }  
