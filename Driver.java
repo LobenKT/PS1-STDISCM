@@ -1,7 +1,9 @@
-public class Driver {
+import javax.swing.SwingUtilities;
 
-	public static void main(String[] args) {
-		View view = new View();
-		//Controller controller = new Controller(view);
-	}
+public class Driver {
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            new View();
+        });
+    }
 }

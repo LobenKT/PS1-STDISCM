@@ -2,8 +2,6 @@ public class Particle {
     private double x, y; // Coordinates of the particle
     private double v; // Velocity in pixels per second
     private double angle; // Movement angle in degrees
-    private static final double radius = 0.01; // Assuming some small radius for simplicity
-    private static final double mass = 0.5; // Assuming a constant mass for simplicity
 
     // Constructor for particle creation
     public Particle(double x, double y, double v, double angle) {
@@ -31,20 +29,12 @@ public class Particle {
         }
     }
 
-    // Getters and Setters if needed
+    // Getters for position, might be useful for rendering
     public double getX() {
         return x;
     }
 
     public double getY() {
         return y;
-    }
-
-    public void setVelocity(double v) {
-        this.v = v;
-    }
-
-    public void setAngle(double angle) {
-        this.angle = angle;
     }
 }
