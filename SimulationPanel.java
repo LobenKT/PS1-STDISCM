@@ -74,6 +74,10 @@ public class SimulationPanel extends JPanel {
         }
     }
 
+    public ThreadManager getThreadManager() {
+        return threadManager;
+    }
+
     private class DrawPanel extends JPanel {
         private double fpsToDisplay = 0;
 
