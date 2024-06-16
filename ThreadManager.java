@@ -3,18 +3,16 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.awt.Graphics;
 
 public class ThreadManager {
     private List<ParticleEngine> processors = new CopyOnWriteArrayList<>();
-    private ExecutorService executorService = Executors.newCachedThreadPool(); // Manages threads dynamically
+    private ExecutorService executorService = Executors.newCachedThreadPool();
     private int canvasWidth, canvasHeight;
-    private int particleSize = 0;
-
-    private int roundRobinIndex = 0;
 
     private long lastAverageProcessingTime = 0;
     private List<Long> processingTimesHistory = new ArrayList<>();
-    private static final int PROCESSING_TIME_HISTORY_SIZE = 20;
+    private static final int PROCESSING_TIME_HISTORY_SIZE = 20; 
 
     public ThreadManager() {
     }
@@ -26,69 +24,33 @@ public class ThreadManager {
     }
 
     private void addProcessor() {
-        ParticleEngine processor = new ParticleEngine(canvasWidth, canvasHeight);
-        processors.add(processor);
-        executorService.execute(processor); // Start the processor in a new thread
+        ParticleEngine engine = new ParticleEngine(canvasWidth, canvasHeight);
+        processors.add(engine);
+        executorService.execute(engine);
     }
 
-    private void addProcessor(List<Particle> particles) {
-        ParticleEngine processor = new ParticleEngine(canvasWidth, canvasHeight, particles);
-        processors.add(processor);
-        executorService.execute(processor);
-    }
-
-    public void checkAndAdjustThread() {
-        if (shouldAddThread()) {
-            redistributeParticles();
+    public void updateProcessingTimes() {
+        long totalProcessingTime = 0;
+        for (ParticleEngine engine : processors) {
+            totalProcessingTime += engine.getLastProcessingTime();
         }
-    }
-
-    private boolean shouldAddThread() {
-        boolean processingTimeIncreasing = false;
-        if (!processingTimesHistory.isEmpty() &&
-            particleSize >= 1000) { // for warm-up
-            long currentAverageProcessingTime = processingTimesHistory.get(processingTimesHistory.size() - 1);
-            processingTimeIncreasing = currentAverageProcessingTime > lastAverageProcessingTime;
+        long currentAverageProcessingTime = totalProcessingTime / processors.size();
+        processingTimesHistory.add(currentAverageProcessingTime);
+        if (processingTimesHistory.size() > PROCESSING_TIME_HISTORY_SIZE) {
+            processingTimesHistory.remove(0); // Keep the list size fixed
         }
-
-        boolean significantParticleIncrease = particleSize >= lastParticleSizeAtThreadAddition * 1.10;
-        return processingTimeIncreasing &&
-            processors.size() < Runtime.getRuntime().availableProcessors() &&
-            particleSize != 0 && significantParticleIncrease;
-    }
-
-    public void addParticle(Particle particle) {
-        if (processors.isEmpty()) {
-            addProcessor();
-        }
-        particleSize += 1;
-        ParticleEngine selectedProcessor = processors.get(roundRobinIndex);
-        selectedProcessor.addParticle(particle);
-        roundRobinIndex = (roundRobinIndex + 1) % processors.size();
+        lastAverageProcessingTime = processingTimesHistory.stream().mapToLong(Long::longValue).average().orElse(0);
     }
 
     public void updateParticles() {
-        for (ParticleEngine processor : processors) {
-            executorService.submit(processor::run);
+        for (ParticleEngine engine : processors) {
+            engine.updateParticles();
         }
     }
 
     public void drawParticles(Graphics g, int canvasHeight) {
-        for (ParticleEngine processor : processors) {
-            processor.drawParticles(g, canvasHeight);
+        for (ParticleEngine engine : processors) {
+            engine.drawParticles(g, canvasHeight);
         }
-    }
-
-    public int getParticleSize() {
-        return particleSize;
-    }
-
-    private void redistributeParticles() {
-        List<Particle> newParticles = new ArrayList<>();
-        for (ParticleEngine processor : processors) {
-            List<Particle> redistributedParticles = processor.popParticles();
-            newParticles.addAll(redistributedParticles);
-        }
-        addProcessor(newParticles);
     }
 }

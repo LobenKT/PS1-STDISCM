@@ -1,39 +1,41 @@
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.awt.Graphics;
 
 public class ParticleEngine implements Runnable {
-    private ParticleEngine ParticleEngine;
+    private ParticleController particleController;
     private int canvasWidth, canvasHeight;
     private long lastProcessingTime = 0;
 
     public ParticleEngine(int canvasWidth, int canvasHeight) {
-        this.ParticleEngine = new ParticleEngine();
-        this.canvasHeight = canvasHeight;
+        this.particleController = new ParticleController();
         this.canvasWidth = canvasWidth;
+        this.canvasHeight = canvasHeight;
     }
 
     public ParticleEngine(int canvasWidth, int canvasHeight, List<Particle> particles) {
-        this.ParticleEngine = new ParticleEngine(particles);
-        this.canvasHeight = canvasHeight;
+        this.particleController = new ParticleController(particles);
         this.canvasWidth = canvasWidth;
+        this.canvasHeight = canvasHeight;
     }
 
     @Override
     public void run() {
         long startTime = System.currentTimeMillis();
 
-        ParticleEngine.updateParticles(canvasWidth, canvasHeight);
+        // Update particles with respect to the canvas dimensions
+        particleController.updateParticles(canvasWidth, canvasHeight);
 
         long endTime = System.currentTimeMillis();
         lastProcessingTime = endTime - startTime;
     }
 
     public void addParticle(Particle particle) {
-        ParticleEngine.addParticle(particle);
+        particleController.addParticle(particle);
     }
 
-    public ParticleEngine getParticleEngine() {
-        return ParticleEngine;
+    public ParticleController getParticleController() {
+        return particleController;
     }
 
     public long getLastProcessingTime() {
@@ -41,12 +43,16 @@ public class ParticleEngine implements Runnable {
     }
 
     public void drawParticles(Graphics g, int canvasHeight) {
-        ParticleEngine.drawParticles(g, canvasHeight);
+        particleController.drawParticles(g, canvasHeight);
     }
 
-    public List<Particle> popParticles() {
-        List<Particle> particles = ParticleEngine.getParticles();
-        ParticleEngine = new ParticleEngine();
-        return particles;
+    public List<Particle> getParticles() {
+        return particleController.getParticles();
+    }
+
+    public void updateParticles() {
+        // Assume this method updates particle state, perhaps for each frame or tick
+        // Should be called from the game loop or similar scheduling mechanism
+        particleController.updateParticles(canvasWidth, canvasHeight);
     }
 }
