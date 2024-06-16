@@ -1,8 +1,3 @@
-// AML GROUPS
-// LOBEN KLIEN A. TIPAN
-// MELANIE AQUINO
-// ALEXIS AMBRAY
-
 import javax.swing.*;
 import java.awt.*;
 
@@ -18,13 +13,21 @@ public class Driver extends JFrame {
         setTitle("Particle Physics Simulator");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         add(simulationPanel);
-        pack();
+        pack(); 
         setLocationRelativeTo(null);
         setResizable(false);
         setVisible(true);
     }
 
     public static void main(String[] args) {
-        EventQueue.invokeLater(() -> new Driver());
+        EventQueue.invokeLater(() -> {
+            Driver driver = new Driver();
+            if (driver.simulationPanel != null) {
+                ControlPanel controlPanel = new ControlPanel(driver.simulationPanel.getThreadManager());
+                controlPanel.setVisible(true);
+            } else {
+                System.out.println("SimulationPanel is null.");
+            }
+        });
     }
 }
