@@ -3,6 +3,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.awt.Graphics;
 
 public class ThreadManager {
@@ -66,6 +67,11 @@ public class ThreadManager {
         selectedProcessor.addParticle(particle);
         roundRobinIndex = (roundRobinIndex + 1) % processors.size();
         lastParticleSizeAtThreadAddition = particleSize;
+        try {
+            Thread.sleep(1 * 1000);
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+        }
     }
 
     public void updateParticles() {
