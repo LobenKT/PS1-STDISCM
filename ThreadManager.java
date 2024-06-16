@@ -67,11 +67,7 @@ public class ThreadManager {
         selectedProcessor.addParticle(particle);
         roundRobinIndex = (roundRobinIndex + 1) % processors.size();
         lastParticleSizeAtThreadAddition = particleSize;
-        try {
-            Thread.sleep(1 * 1000);
-        } catch (InterruptedException ie) {
-            Thread.currentThread().interrupt();
-        }
+        
     }
 
     public void updateParticles() {

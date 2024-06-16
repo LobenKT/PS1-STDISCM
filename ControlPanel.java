@@ -92,6 +92,11 @@ public class ControlPanel extends JFrame {
             int number = Integer.parseInt(numberInput.getText());
             for (int i = 0; i < number; i++) {
                 threadManager.addParticle(new Particle(x, y, Math.cos(angle) * velocity, Math.sin(angle) * velocity));
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                }
             }
             String feedback = "Added " + number + " particles at (" + x + ", " + y + ") with angle " + Math.toDegrees(angle) + "° and velocity " + velocity;
             updateFeedbackDisplay(feedback);
