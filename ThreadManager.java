@@ -19,19 +19,25 @@ public class ThreadManager {
 
     private int lastParticleSizeAtThreadAddition = 0;
 
-    public ThreadManager() {
-    }
-
     public void setCanvasSize(int canvasWidth, int canvasHeight) {
         this.canvasWidth = canvasWidth;
         this.canvasHeight = canvasHeight;
-        addProcessor();
+        if (processors.isEmpty()) {
+            addProcessor();
+        }
     }
 
     private void addProcessor() {
-        ParticleEngine processor = new ParticleEngine(canvasWidth, canvasHeight);
-        processors.add(processor);
-        executorService.execute(processor);
+        ParticleEngine engine = new ParticleEngine(canvasWidth, canvasHeight);
+        processors.add(engine);
+        executorService.execute(engine);
+        lastParticleSizeAtThreadAddition = particleSize;
+    }
+
+    private void addProcessor(List<Particle> particles) {
+        ParticleEngine engine = new ParticleEngine(canvasWidth, canvasHeight, particles);
+        processors.add(engine);
+        executorService.execute(engine);
         lastParticleSizeAtThreadAddition = particleSize;
     }
 
@@ -43,39 +49,34 @@ public class ThreadManager {
     
     private boolean shouldAddThread() {
         boolean processingTimeIncreasing = false;
-        if (!processingTimesHistory.isEmpty() &&
-            particleSize >= 1000) {
+        if (!processingTimesHistory.isEmpty() && particleSize >= 1000) {
             long currentAverageProcessingTime = processingTimesHistory.get(processingTimesHistory.size() - 1);
             processingTimeIncreasing = currentAverageProcessingTime > lastAverageProcessingTime;
         }
-
         boolean significantParticleIncrease = particleSize >= lastParticleSizeAtThreadAddition * 1.10;
-        return processingTimeIncreasing &&
-               processors.size() < Runtime.getRuntime().availableProcessors() &&
-               particleSize != 0 && significantParticleIncrease;
-    }
+        return processingTimeIncreasing && processors.size() < Runtime.getRuntime().availableProcessors() && particleSize != 0 && significantParticleIncrease;
+    }    
 
     public void addParticle(Particle particle) {
         if (processors.isEmpty()) {
             addProcessor(); 
         }
-
-        particleSize += 1;
-
+        particleSize++;
         ParticleEngine selectedProcessor = processors.get(roundRobinIndex);
         selectedProcessor.addParticle(particle);
         roundRobinIndex = (roundRobinIndex + 1) % processors.size();
+        lastParticleSizeAtThreadAddition = particleSize;
     }
 
     public void updateParticles() {
         for (ParticleEngine processor : processors) {
-            processor.updateParticles();
+            executorService.submit(processor::run);
         }
     }
 
     public void drawParticles(Graphics g, int canvasHeight) {
         for (ParticleEngine processor : processors) {
-            processor.drawParticles(g, canvasHeight);
+            processor.getParticleController().drawParticles(g, canvasHeight);
         }
     }
 
@@ -84,12 +85,15 @@ public class ThreadManager {
     }
 
     private void redistributeParticles() {
+        int processorSize = processors.size();
         List<Particle> newParticles = new ArrayList<>();
         for (ParticleEngine processor : processors) {
-            List<Particle> extractedParticles = processor.popParticles();
-            newParticles.addAll(extractedParticles);
+            List<Particle> extractedParticles = processor.getParticleController().getParticles();
+            int popCount = extractedParticles.size() / (processorSize + 1); 
+            newParticles.addAll(extractedParticles.subList(0, popCount));
+            extractedParticles.removeAll(newParticles);
         }
-        addProcessor(newParticles); // Rebalance the load
+        addProcessor(newParticles);
     }
 
     public void updateProcessingTimes() {
@@ -100,8 +104,8 @@ public class ThreadManager {
         long currentAverageProcessingTime = totalProcessingTime / processors.size();
         processingTimesHistory.add(currentAverageProcessingTime);
         if (processingTimesHistory.size() > PROCESSING_TIME_HISTORY_SIZE) {
-            processingTimesHistory.remove(0); // Keep the list size fixed
+            processingTimesHistory.remove(0);
         }
-        lastAverageProcessingTime = processingTimesHistory.stream().mapToLong(Long::longValue).average().orElse(0);
+        lastAverageProcessingTime = processingTimesHistory.stream().mapToLong(Long::longValue).sum() / processingTimesHistory.size();
     }
 }
