@@ -3,7 +3,6 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import java.awt.Graphics;
 
 public class ThreadManager {
@@ -75,6 +74,7 @@ public class ThreadManager {
         } catch (InterruptedException ie) {
             Thread.currentThread().interrupt();
         }
+    }
 
 
     public void addParticles(List<Particle> particles) {
