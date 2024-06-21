@@ -67,7 +67,14 @@ public class ThreadManager {
         roundRobinIndex = (roundRobinIndex + 1) % processors.size();
         System.out.println("Particle added: " + particle);
         System.out.println("Current particle size: " + particleSize);
-    }
+
+
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+        }
+
 
     public void addParticles(List<Particle> particles) {
         if (processors.isEmpty()) {
