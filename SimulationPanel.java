@@ -78,6 +78,11 @@ public class SimulationPanel extends JPanel {
         return threadManager;
     }
 
+    public void refreshDisplay() {
+        drawPanel.repaint(); // This will cause the DrawPanel to redraw and update the particle count display
+    }
+
+
     private class DrawPanel extends JPanel {
         private double fpsToDisplay = 0;
 

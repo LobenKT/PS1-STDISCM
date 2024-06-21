@@ -80,11 +80,11 @@ public class ThreadManager {
         System.out.println("Current particle size: " + particleSize);
 
 
-        try {
-            Thread.sleep(100);
-        } catch (InterruptedException ie) {
-            Thread.currentThread().interrupt();
-        }
+     //   try {
+      //      Thread.sleep(10);
+      //  } catch (InterruptedException ie) {
+      //      Thread.currentThread().interrupt();
+      //  }
     }
 
 
