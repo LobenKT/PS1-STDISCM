@@ -74,6 +74,7 @@ public class ThreadManager {
         } catch (InterruptedException ie) {
             Thread.currentThread().interrupt();
         }
+    }
 
 
     public void addParticles(List<Particle> particles) {
