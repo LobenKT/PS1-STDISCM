@@ -13,10 +13,10 @@ public class ThreadManager {
     private int particleSize = 0;
 
     private int roundRobinIndex = 0;
-    
+
     private long lastAverageProcessingTime = 0;
     private List<Long> processingTimesHistory = new ArrayList<>();
-    private static final int PROCESSING_TIME_HISTORY_SIZE = 20; 
+    private static final int PROCESSING_TIME_HISTORY_SIZE = 20;
 
     private int lastParticleSizeAtThreadAddition = 0;
 
@@ -47,7 +47,7 @@ public class ThreadManager {
             redistributeParticles();
         }
     }
-    
+
     private boolean shouldAddThread() {
         boolean processingTimeIncreasing = false;
         if (!processingTimesHistory.isEmpty() && particleSize >= 1000) {
@@ -56,7 +56,7 @@ public class ThreadManager {
         }
         boolean significantParticleIncrease = particleSize >= lastParticleSizeAtThreadAddition * 1.10;
         return processingTimeIncreasing && processors.size() < Runtime.getRuntime().availableProcessors() && particleSize != 0 && significantParticleIncrease;
-    }    
+    }
 
     public void addParticle(Particle particle) {
         if (processors.isEmpty()) {
@@ -66,8 +66,18 @@ public class ThreadManager {
         ParticleEngine selectedProcessor = processors.get(roundRobinIndex);
         selectedProcessor.addParticle(particle);
         roundRobinIndex = (roundRobinIndex + 1) % processors.size();
-        lastParticleSizeAtThreadAddition = particleSize;
-        
+        System.out.println("Particle added: " + particle);
+        System.out.println("Current particle size: " + particleSize);
+    }
+
+    public void addParticles(List<Particle> particles) {
+        if (processors.isEmpty()) {
+            addProcessor(); 
+        }
+        for (Particle particle : particles) {
+            addParticle(particle);
+        }
+        System.out.println("Batch of particles added. Total particles: " + particles.size());
     }
 
     public void updateParticles() {
@@ -91,7 +101,7 @@ public class ThreadManager {
         List<Particle> newParticles = new ArrayList<>();
         for (ParticleEngine processor : processors) {
             List<Particle> extractedParticles = processor.getParticleController().getParticles();
-            int popCount = extractedParticles.size() / (processorSize + 1); 
+            int popCount = extractedParticles.size() / (processorSize + 1);
             newParticles.addAll(extractedParticles.subList(0, popCount));
             extractedParticles.removeAll(newParticles);
         }
