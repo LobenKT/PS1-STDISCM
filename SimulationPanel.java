@@ -8,7 +8,7 @@ public class SimulationPanel extends JPanel {
     private final ThreadManager threadManager;
     private Thread gameThread;
     private volatile boolean running = false;
-    private FPSTracker fpsTracker = new FPSTracker();
+    private FPSCounter fpsTracker = new FPSCounter();
 
     public SimulationPanel() {
         drawPanel = new DrawPanel();

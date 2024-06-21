@@ -1,9 +1,9 @@
-public class FPSTracker {
+public class FPSCounter {
     private long lastTimeCheck; 
     private int frameCount; 
     private int fps; 
 
-    public FPSTracker() {
+    public FPSCounter() {
         lastTimeCheck = System.currentTimeMillis();
         frameCount = 0;
         fps = 0;
