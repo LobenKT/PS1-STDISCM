@@ -36,4 +36,8 @@ public class ParticleEngine implements Runnable {
     public long getLastProcessingTime() {
         return lastProcessingTime;
     }
+
+    public void clearParticles() {
+        particleController.clearParticles(); // Assuming ParticleController has a method to clear particles
+    }
 }

@@ -27,6 +27,17 @@ public class ThreadManager {
         }
     }
 
+    public void clearParticles() {
+        // Clear all ParticleEngines or reset them
+        for (ParticleEngine engine : processors) {
+            engine.clearParticles(); // Assume each ParticleEngine has a method to clear its particles
+        }
+        particleSize = 0; // Reset the count of particles
+        // Notify observers or components that the particle count has changed, if necessary
+    }
+    
+    
+
     private void addProcessor() {
         ParticleEngine engine = new ParticleEngine(canvasWidth, canvasHeight);
         processors.add(engine);

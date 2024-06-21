@@ -115,7 +115,7 @@ public class SimulationPanel extends JPanel {
 
             if (fpsToDisplay >= 60){
                 g.setColor(Color.GREEN);
-            } else if (fpsToDisplay >= 50){
+            } else if (fpsToDisplay >= 30){
                 g.setColor(Color.ORANGE);
             } else {
                 g.setColor(Color.RED);

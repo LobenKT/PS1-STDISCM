@@ -31,4 +31,9 @@ public class ParticleController {
             particle.draw(g, canvasHeight);
         }
     }
+
+    public void clearParticles() {
+        particles.clear(); // Clear the list of particles
+    }
+    
 }

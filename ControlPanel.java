@@ -10,41 +10,63 @@ public class ControlPanel extends JFrame {
     private final JLabel feedbackLabel;
     private final List<String> feedbackMessages = new ArrayList<>();
 
+    
+
     public ControlPanel(ThreadManager threadManager) {
         this.threadManager = threadManager;
         setTitle("Particle Controls");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setSize(750, 400);
-
+    
         feedbackLabel = new JLabel("<html></html>");
         feedbackLabel.setHorizontalAlignment(JLabel.CENTER);
-
+    
         JScrollPane feedbackScrollPane = new JScrollPane(feedbackLabel,
                 JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         feedbackScrollPane.setPreferredSize(new Dimension(700, 150));
         feedbackScrollPane.setBorder(null);
-
+    
         JLabel feedbackTitle = new JLabel("Output");
         feedbackTitle.setHorizontalAlignment(JLabel.CENTER);
         feedbackTitle.setBorder(new EmptyBorder(10, 0, 10, 0));
         feedbackTitle.setOpaque(true);
         feedbackTitle.setBackground(Color.WHITE);
-
+    
         JPanel feedbackPanel = new JPanel(new BorderLayout());
         feedbackPanel.add(feedbackTitle, BorderLayout.NORTH);
         feedbackPanel.add(feedbackScrollPane, BorderLayout.CENTER);
-
+    
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
         mainPanel.add(createParticleInputPanel());
         mainPanel.add(createBatchAdditionPanel()); // Add batch addition panel
+        setupClearButton(mainPanel); // Pass the mainPanel when calling the method.
+    
         getContentPane().setLayout(new BorderLayout());
         getContentPane().add(mainPanel, BorderLayout.NORTH);
         getContentPane().add(feedbackPanel, BorderLayout.CENTER);
         pack();
         setLocationRelativeTo(null);
+    }
+    
+
+    private void setupClearButton(JPanel mainPanel) {
+        JButton clearButton = new JButton("Clear Particles");
+        clearButton.addActionListener(e -> {
+            threadManager.clearParticles(); // Clear all particles in ThreadManager
+            clearFeedbackDisplay(); // Clear the output panel
+        });
+    
+        JPanel clearButtonPanel = new JPanel();
+        clearButtonPanel.add(clearButton);
+        mainPanel.add(clearButtonPanel, BorderLayout.SOUTH); // Add clear button at the bottom of the main panel
+    }
+    
+    private void clearFeedbackDisplay() {
+        feedbackMessages.clear(); // Clear the list of messages
+        feedbackLabel.setText("<html></html>"); // Reset the HTML content of the feedback label
     }
 
     private JPanel createParticleInputPanel() {
